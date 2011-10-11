@@ -52,7 +52,7 @@ public class MuteListener extends PlayerListener{
             
             event.setCancelled(true);
        } else {
-            if (!event.getMessage().trim().startsWith("/getmute") || (!event.getMessage().trim().startsWith("/mutestat"))){
+            if (!event.getMessage().trim().startsWith("/getmute") || (!event.getMessage().trim().startsWith("/mymute")) || (!event.getMessage().trim().startsWith("/unmute"))){
                 if (MuteMan.config.getBoolean("disable-commands", false)){
                     if (MuteManager.isMuted(event.getPlayer().getName())){
                         MuteManager.Punishment(event.getPlayer());
