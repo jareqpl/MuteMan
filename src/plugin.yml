@@ -2,15 +2,19 @@ name: MuteMan
 main: sp.bukkit.muteman.MuteMan
 version: 0.1
 commands:
-   addmute:
+   mute:
       description:
       permission: 
       usage:
-   delmute:
+   unmute:
       description:
       permission: 
       usage:
    getmute:
+      description:
+      permission: 
+      usage:
+   mutestat:
       description:
       permission: 
       usage:

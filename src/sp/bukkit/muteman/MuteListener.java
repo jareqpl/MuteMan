@@ -6,6 +6,7 @@ package sp.bukkit.muteman;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerListener;
 
 /**
@@ -17,26 +18,48 @@ public class MuteListener extends PlayerListener{
     @Override
     public void onPlayerChat(PlayerChatEvent event){
         Player player = event.getPlayer();
-        if (MuteManager.isMuted(player)){
-            if (MuteMan.config.getBoolean("notify.enabled", true)){
-                player.sendMessage(Msg.$("mute-notify"));
-                if (MuteMan.config.getBoolean("notify.time", true)){
-                    Long time = MuteManager.getTime(player.getName());
-                    if (time == -1){
-                        player.sendMessage(Msg.$("time-left").replace("%time%", Msg.$("ever")));
-                    } else {
-                        player.sendMessage(Msg.$("time-left").replace("%time%", MuteManager.getTime(player.getName()).toString().concat(Msg.$("sec"))));
-                    }
-                }
-                int damage = MuteMan.config.getInt("damage", 0);
-                if (damage != 0){
-                    player.sendMessage(Msg.$("damaged"));
-                    player.damage(damage);
-                }
-            }
+        if (MuteManager.isMuted(player.getName())){
+            MuteManager.Punishment(player);
             event.setCancelled(true);
         } else {
+            if (!Access.canSwear(event.getPlayer()));
+                Swear.check(event);
+        }
+    }
+    @Override
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){
+        MuteManager.isMuted(event.getPlayer().getName());
+        if (event.getMessage().trim().startsWith("/mute") || event.getMessage().trim().startsWith("/unmute")) {
+            Player sender = event.getPlayer();
+            String[] args = event.getMessage().split(" ");
+            String cmd = args[0];
+            if (cmd.equalsIgnoreCase("/mute")){
+                if (args.length <= 2) {
+                    sender.sendMessage(Msg.$("mute-usage"));
+                    event.setCancelled(true);
+                    return; 
+                }
+                MuteMan.commandMute(sender, args[1], args[2]);
+                
+            } else if (cmd.equalsIgnoreCase("/unmute")){
+               if (args.length <= 1) {
+                    sender.sendMessage(Msg.$("unmute-usage"));
+                    event.setCancelled(true);
+                    return; 
+                }
+                MuteMan.commandUnMute(sender, args[1]);
+            }
             
+            event.setCancelled(true);
+       } else {
+            if (!event.getMessage().trim().startsWith("/getmute") || (!event.getMessage().trim().startsWith("/mutestat"))){
+                if (MuteMan.config.getBoolean("disable-commands", false)){
+                    if (MuteManager.isMuted(event.getPlayer().getName())){
+                        MuteManager.Punishment(event.getPlayer());
+                        event.setCancelled(true);
+                    }
+                }
+            }
         }
     }
 }

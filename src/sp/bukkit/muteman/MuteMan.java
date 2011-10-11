@@ -40,14 +40,17 @@ public class MuteMan extends JavaPlugin{
         config.load();
         
         config.getInt("damage", 0);
-        config.getBoolean("notify.enable", true);
+        config.getBoolean("notify.enabled", true);
         config.getBoolean("notify.time", true);
-        config.getBoolean("disable-permissions.enabled", false);
-        config.getString("disable-permissions.list", null);
+        config.getString("add-permissions.list", null);
+        config.getString("set-group", null);
+        config.getBoolean("disable-commands",false);
         
         config.save();
         
         Msg.setupMsg(getDataFolder());
+        Swear.setupSwear(getDataFolder());
+         
         Access.setupPermissions();
         
         MuteManager.setupMuteManager(getDataFolder());
@@ -55,6 +58,7 @@ public class MuteMan extends JavaPlugin{
         muteListener = new MuteListener();
         
         pluginman.registerEvent(Type.PLAYER_CHAT, muteListener, Priority.Highest, this);
+        pluginman.registerEvent(Type.PLAYER_COMMAND_PREPROCESS, muteListener, Priority.Highest, this);
         config.save();
     }
     @Override
@@ -62,54 +66,67 @@ public class MuteMan extends JavaPlugin{
     }
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){ 
-        if (sender instanceof Player){
-            List perms = config.getStringList("disable-permissions.list", null);
-            Player p = (Player) sender;
-            Log.info("add " + perms.size() + " perms: ");
-            for (int i = 0; i < perms.size(); i++){
-                Log.info("add " + perms.get(i));
-                Access.addNode(p, (String) perms.get(i));
-            }
-        }
-        if (cmd.getName().equalsIgnoreCase("addmute")){
-            if (args.length <= 0) {
-                sender.sendMessage(Msg.$("mute-usage"));
-                return true;
-            }
-            if (args.length <= 1) {
-                sender.sendMessage(Msg.$("not-valid-num"));
-                return true;
-            }
-            int mute;
-            try {
-                mute = Integer.parseInt(args[1]);
-            } catch (Exception e){
-                if (!args[1].equals("forever")){
-                    sender.sendMessage(Msg.$("not-valid-num"));
-                    return true;
-                } else {
-                    mute = -1;
-                }
-            }
-            Long mutelong = Long.parseLong(Integer.toString(mute));
-            MuteManager.Mute(sender, args[0], mutelong);
-        }
-        if (cmd.getName().equalsIgnoreCase("delmute")){
-            if (args.length <= 0) {
-                sender.sendMessage(Msg.$("delmute"));
-                return true;
-            }
-            MuteManager.unMute(sender, args[0]);
-        }
         if (cmd.getName().equalsIgnoreCase("getmute")){
            if (args.length <= 0) {
                 sender.sendMessage(Msg.$("getmute-usage"));
                 return true;
             }
            MuteManager.getMute(sender, args[0]);
+        } else if (cmd.getName().equalsIgnoreCase("mutestat")){
+            if (sender instanceof Player){
+                Player p = (Player) sender;
+                MuteManager.getMute(sender, p.getName());
+            }
+            else
+                sender.sendMessage("Only player can access this command!");
+        } else if (cmd.getName().equalsIgnoreCase("mutereload")){
+            if (Access.canReload(sender)){
+            config.load();
+            Msg.setupMsg(getDataFolder());
+            MuteManager.setupMuteManager(getDataFolder());
+            Swear.setupSwear(getDataFolder());
+            
+            } else {
+                sender.sendMessage(Msg.$("not-permitted"));
+            }
         }
         
         return true;
     }
+    public static void commandUnMute(CommandSender sender, String player){
+        if (player == null) {
+            sender.sendMessage(Msg.$("unmute-usage"));
+            return;
+        }
+        MuteManager.unMute(sender, player);
+    }
+    public static void commandMute(CommandSender sender, String player, String duration){
+            if (player == null || duration == null) {
+                sender.sendMessage(Msg.$("mute-usage"));
+                return;
+            }
 
+            int mute;
+            try {
+                mute = Integer.parseInt(duration);
+            } catch (Exception e){
+                if (!duration.equals("forever")){
+                    sender.sendMessage(Msg.$("not-valid-num"));
+                    return;
+                } else {
+                    mute = -1;
+                }
+            }
+            Long mutelong = Long.parseLong(Integer.toString(mute));
+            MuteManager.Mute(sender, player, mutelong);
+            List perms = config.getStringList("add-permissions.list", null);
+            for (int i = 0; i < perms.size(); i++) {
+                Access.addNode(player, (String) perms.get(i));
+            }
+            if (config.getString("set-group", "") != ""){
+                String group = config.getString("set-group", "");
+                Log.info(group);
+                Access.addGroup(player, group);
+            }
+    }
 }
