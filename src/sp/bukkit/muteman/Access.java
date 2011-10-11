@@ -22,6 +22,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  */
 public class Access {
     private static PermissionHandler permissionHandler;
+    private static PermissionManager pex;
     public static void setupPermissions() {
         if (permissionHandler != null) {
             return;
@@ -32,7 +33,15 @@ public class Access {
             return;
         }
         permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-        Log.info("Found and will use plugin " + ((Permissions)permissionsPlugin).getDescription().getFullName());
+        Log.info("Permission system: " + ((Permissions)permissionsPlugin).getDescription().getFullName());
+        try {
+            pex = PermissionsEx.getPermissionManager();
+        } catch(Exception e){
+            Log.info("PermissionsEx-support enable error!");
+        }
+        if (pex == null){
+            Log.info("PermissionsEx not found, mute-set-group and mute-add-nodes are not available!");
+        }
     }
     public static boolean canMute(Player player){
         if (player == null) return true;
@@ -55,12 +64,11 @@ public class Access {
     public static boolean canReload(CommandSender sender){
         if (sender instanceof Player){
             Player p = (Player) sender;
-            if ((permissionHandler.has(p, "commandbook.mute"))||(permissionHandler.has(p, "muteman.reload"))){
-                return true;
+            if (!(permissionHandler.has(p, "commandbook.mute"))||(permissionHandler.has(p, "muteman.reload"))){
+                return false;
             }
         }
-        
-        return false;
+        return true;
     }
     public static boolean canSwear(CommandSender sender){
         if (sender instanceof Player){
@@ -75,23 +83,23 @@ public class Access {
     public static void removeNode(String player, String node){
         if (player == null) return;
         else {
-            PermissionManager pex = PermissionsEx.getPermissionManager();
+            if (pex != null)
             pex.getUser(player).removePermission(node);
         }
     }
     public static void removeGroup(String player, String group){
-            PermissionManager pex = PermissionsEx.getPermissionManager();
+            if (pex != null)
             pex.getUser(player).removeGroup(pex.getGroup(group));           
     }
     public static void addGroup(String player, String group){
-            PermissionManager pex = PermissionsEx.getPermissionManager();
+            if (pex != null)
             pex.getUser(player).addGroup(pex.getGroup(group));      
     }
     public static void addNode(String player, String node) {
         if (player == null) {
             return;
         } else {
-            PermissionManager pex = PermissionsEx.getPermissionManager();
+            if (pex != null)
             pex.getUser(player).addPermission(node);
         }
     }

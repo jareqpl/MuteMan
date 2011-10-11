@@ -20,20 +20,21 @@ public class Msg {
         map = new HashMap<String, String>();
         
         map.put("not-permitted", "&cYou are not permitted to do this!");
-        map.put("mute-notify", "&cYou are mutted!");
+        map.put("mute-notify", "&cYou are muted!");
         map.put("time-left", "&aTime left: &f%time%&a.");
         map.put("sec", " second(s)");
         map.put("ever", "forever");
         map.put("not-valid-num", "&eEnter a valid time in seconds (or string \"forever\")!");
-        map.put("empty-name", "&eEnter name of a player!");
-        map.put("muted-already", "&eThis player is muted already! Time:&f %time%&e.");
+        map.put("empty-name", "&eEnter name of the player!");
+        map.put("muted-already", "&eThis player is muted already! Time left:&f %time%&e.");
         map.put("muted-success", "&cPlayer &f%player%&c muted!");
-        map.put("unmutted-success", "&cPlayer &f%player%&c unmutted!");
-        map.put("damaged", "&eGet this damage!");
-        map.put("getmute-already", "&ePlayer %player% is mutted! Time: &f%time%&e.");
+        map.put("unmutted-success", "&cPlayer &f%player%&c unmuted!");
+        map.put("damaged", "&e*Bam!*");
+        map.put("getmute-already", "&ePlayer %player% is muted! Time left: &f%time%&e.");
         map.put("getmute-not", "&aPlayer %player% is'nt mutted.");
         map.put("you-are-muted", "&cYou are muted for &f%time%.");
         
+        map.put("reloaded", "&aConfiguration reloaded!");
         map.put("dont-swear", "&cDont swear!");
         
         map.put("mute-usage", "&aUsage: &f/mute (player) (time)&a, where player - player name and time - time in seconds (or string \"forever\").");

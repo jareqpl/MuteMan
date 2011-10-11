@@ -145,7 +145,12 @@ public class MuteManager {
     public static void getMute(CommandSender sender, String player) {
         if (Access.canGet((Player) sender) || !(sender instanceof Player)) {
             if (isMuted(player)) {
-                sender.sendMessage(Msg.$("getmute-already").replace("%time%", getTime(player).toString()).replace("-1", Msg.$("ever")).replace("%player%", player));
+                Long time = getTime(player);
+                if (time == -1) {
+                    sender.sendMessage(Msg.$("getmute-already").replace("%time%", Msg.$("ever")).replace("%player%", player));
+                } else {
+                    sender.sendMessage(Msg.$("getmute-already").replace("%time%", time.toString().concat(Msg.$("sec"))).replace("%player%", player));
+                }
             } else {
                 sender.sendMessage(Msg.$("getmute-not").replace("%player%", player));
             }

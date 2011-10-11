@@ -10,11 +10,11 @@ commands:
       description:
       permission: 
       usage:
-   getmute:
+   mymute:
       description:
       permission: 
       usage:
-   mutestat:
+   reloadmute:
       description:
       permission: 
       usage:

@@ -60,32 +60,35 @@ public class MuteMan extends JavaPlugin{
         pluginman.registerEvent(Type.PLAYER_CHAT, muteListener, Priority.Highest, this);
         pluginman.registerEvent(Type.PLAYER_COMMAND_PREPROCESS, muteListener, Priority.Highest, this);
         config.save();
+        Log.info("MuteMan by ShadowPrince enabled successfully!");
     }
     @Override
     public void onDisable() {
+        Log.info("MuteMan by ShadowPrince disabled successfully!");
     }
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){ 
+        
         if (cmd.getName().equalsIgnoreCase("getmute")){
            if (args.length <= 0) {
                 sender.sendMessage(Msg.$("getmute-usage"));
                 return true;
             }
            MuteManager.getMute(sender, args[0]);
-        } else if (cmd.getName().equalsIgnoreCase("mutestat")){
+        } else if (cmd.getName().equalsIgnoreCase("mymute")){
             if (sender instanceof Player){
                 Player p = (Player) sender;
                 MuteManager.getMute(sender, p.getName());
             }
             else
                 sender.sendMessage("Only player can access this command!");
-        } else if (cmd.getName().equalsIgnoreCase("mutereload")){
-            if (Access.canReload(sender)){
-            config.load();
-            Msg.setupMsg(getDataFolder());
-            MuteManager.setupMuteManager(getDataFolder());
-            Swear.setupSwear(getDataFolder());
-            
+        } else if (cmd.getName().equalsIgnoreCase("reloadmute")){
+            if (Access.canReload(sender)) {
+                config.load();
+                Msg.setupMsg(getDataFolder());
+                MuteManager.setupMuteManager(getDataFolder());
+                Swear.setupSwear(getDataFolder());
+                sender.sendMessage(Msg.$("reloaded"));
             } else {
                 sender.sendMessage(Msg.$("not-permitted"));
             }
