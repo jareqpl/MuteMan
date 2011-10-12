@@ -18,3 +18,8 @@ commands:
       description:
       permission: 
       usage:
+   getmute:
+      description:
+      permission: 
+      usage:
+     
