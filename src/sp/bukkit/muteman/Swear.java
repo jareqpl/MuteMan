@@ -24,8 +24,8 @@ public class Swear {
         config.load();
         config.setProperty("settings.damage.from", 3);
         config.setProperty("settings.damage.damage", 2);
-        config.setProperty("settings.mute.from", 5);
-        config.setProperty("settings.mute.time", 60);
+        config.setProperty("settings.mute.from", 1);
+        config.setProperty("settings.mute.time", 120);
         config.save();
         
     }
